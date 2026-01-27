@@ -9,6 +9,9 @@ import SwiftUI
 
 struct CameraView: View {
     var body: some View {
-        Text("Hello, World!")
+        NavigationStack {
+            Text("Hello, World!")
+                .navigationTitle("카메라")
+        }
     }
 }
