@@ -1,0 +1,108 @@
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+name: Gemini AI PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    # 새로운 커밋이 올라오면 이전 리뷰 작업을 취소하여 중복 실행을 방지합니다.
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Get diff
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          # .lock, .pbxproj 등 노이즈 파일을 제외하고 실제 코드 변경사항만 추출합니다.
+          git diff origin/${{ github.base_ref }} -- . ':!*.lock' ':!*.pbxproj' > diff.txt
+
+      - name: Gemini Review
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          # 1. Diff 내용 확인 (변경 사항이 없으면 종료)
+          if [ ! -s diff.txt ]; then
+            echo "리뷰할 유의미한 코드 변경 사항이 없습니다." > review.txt
+            exit 0
+          fi
+
+          # 2. 시니어 개발자 프롬프트 설정
+          PROMPT="당신은 시니어 개발자입니다. 아래의 git diff를 분석하여 코드 리뷰를 작성하세요.
+          
+          조건:
+          - 반드시 한국어로 작성할 것.
+          - Swift/SwiftUI 최신 컨벤션 및 성능 최적화 관점의 개선점 제안.
+          - 코드 블록과 불렛 포인트를 사용하여 가독성 있게 작성.
+          - 칭찬보다는 실제적인 코드 품질 개선 제안에 집중할 것."
+
+          # 3. jq를 사용하여 안전하게 JSON Payload 생성
+          jq -n \
+            --arg prompt "$PROMPT" \
+            --arg diff "$(cat diff.txt)" \
+            '{contents: [{parts: [{text: ($prompt + "\n\n### GIT DIFF ###\n" + $diff)}]}]}' > payload.json
+
+          # 4. API 호출 (재시도 로직 및 데이터 분리 적용)
+          # --retry 5: 서버 부하(503) 발생 시 최대 5번 재시도합니다.
+          # -o response.json: 응답 바디를 파일로 저장하여 문자열 꼬임을 방지합니다.
+          HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" \
+            --retry 5 \
+            --retry-delay 10 \
+            --retry-all-errors \
+            -H "Content-Type: application/json" \
+            -H "x-goog-api-key: $GEMINI_API_KEY" \
+            -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" \
+            -d @payload.json)
+
+          echo "DEBUG: API Response Status: $HTTP_STATUS"
+
+          # 5. 결과 처리
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "❌ API 호출 실패 (Status: $HTTP_STATUS)" > review.txt
+            echo "### 에러 상세 로그" >> review.txt
+            echo "\`\`\`json" >> review.txt
+            cat response.json >> review.txt
+            echo "\`\`\`" >> review.txt
+            exit 0
+          fi
+
+          # 성공 시 본문 파싱 (jq로 파일 직접 읽기)
+          REVIEW=$(jq -r '.candidates[0].content.parts[0].text // "⚠️ 리뷰 본문을 찾을 수 없습니다."' response.json)
+          echo "$REVIEW" > review.txt
+
+      - name: Comment on PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            try {
+              if (fs.existsSync('review.txt')) {
+                const body = fs.readFileSync('review.txt', 'utf8');
+                if (body.trim()) {
+                  await github.rest.issues.createComment({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    body: "🤖 **Gemini AI Code Review (v2.5)**\n\n" + body
+                  });
+                }
+              }
+            } catch (error) {
+              console.log("Error creating comment:", error);
+            }
