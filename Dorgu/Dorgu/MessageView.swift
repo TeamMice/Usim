@@ -44,7 +44,7 @@ struct MessageView: View {
     }
 
     private func analyzeMessage() async {
-        guard let url = URL(string: "http://localhost:3000/analyze-message") else {
+        guard let url = URL(string: "https://api-production-eb90.up.railway.app/analyze-message") else {
             print("Invalid URL")
             return
         }
