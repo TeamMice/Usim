@@ -12,7 +12,7 @@ struct CameraView: View {
     var body: some View {
         ZStack {
             CameraPreview()
-                .ignoresSafeArea(edges: .top)
+                .ignoresSafeArea()
         }
         .navigationTitle("카메라")
         .navigationBarTitleDisplayMode(.inline)
