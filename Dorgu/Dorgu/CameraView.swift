@@ -236,13 +236,11 @@ struct QRAnalysisResultView: View {
                 }
             } catch {
                 let rawResponse = String(data: data, encoding: .utf8) ?? "⚠️ 응답을 문자열로 변환할 수 없습니다."
-                DispatchQueue.main.async {
-                    analysisResult = """
-                    ❌ 분석 결과를 파싱하는 데 실패했습니다.
+                print("❌ QR 분석 JSON 파싱 실패")
+                print("📡 서버 원문 응답:", rawResponse)
 
-                    🔎 서버 원문 응답:
-                    \(rawResponse)
-                    """
+                DispatchQueue.main.async {
+                    analysisResult = "❌ 분석 결과를 파싱하는 데 실패했습니다."
                 }
             }
         }.resume()
