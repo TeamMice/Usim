@@ -1,5 +1,5 @@
 //
-//  CameraView.swift
+//  UsimView.swift
 //  Dorgu
 //
 //  Created by 이돈혁 on 1/27/26.
@@ -8,7 +8,7 @@
 import SwiftUI
 import AVFoundation
 
-struct CameraView: View {
+struct UsimView: View {
     @State private var detectedQR: String?
     @State private var showPopup: Bool = false
     @State private var showAnalysisView: Bool = false
@@ -56,14 +56,14 @@ struct CameraView: View {
 struct CameraPreview: UIViewControllerRepresentable {
     let onDetect: (String) -> Void
 
-    func makeUIViewController(context: Context) -> CameraViewController {
-        CameraViewController(onDetect: onDetect)
+    func makeUIViewController(context: Context) -> UsimViewController {
+        UsimViewController(onDetect: onDetect)
     }
 
-    func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: UsimViewController, context: Context) {}
 }
 
-final class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
+final class UsimViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     private let session = AVCaptureSession()
     private let onDetect: (String) -> Void
     private var lastDetectedQR: String?

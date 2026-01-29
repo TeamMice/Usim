@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MessageView: View {
+struct HomeView: View {
     @State private var messageText: String = ""
     @State private var isLoading: Bool = false
     @State private var resultText: String = ""

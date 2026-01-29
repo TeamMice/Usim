@@ -11,17 +11,17 @@ struct MaintabView: View {
     var body: some View {
         TabView {
             NavigationStack {
-                MessageView()
+                HomeView()
             }
             .tabItem {
-                Label("메시지", systemImage: "message")
+                Label("홈", systemImage: "house")
             }
 
             NavigationStack {
-                CameraView()
+                UsimView()
             }
             .tabItem {
-                Label("카메라", systemImage: "camera")
+                Label("으심대", systemImage: "magnifyingglass")
             }
         }
     }
