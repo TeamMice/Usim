@@ -18,7 +18,7 @@ struct MaintabView: View {
             }
 
             NavigationStack {
-                CameraView()
+                UsimView()
             }
             .tabItem {
                 Label("으심대", systemImage: "magnifyingglass")
@@ -27,6 +27,3 @@ struct MaintabView: View {
     }
 }
 
-#Preview {
-    MaintabView()
-}
