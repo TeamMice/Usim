@@ -8,75 +8,90 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var messageText: String = ""
-    @State private var isLoading: Bool = false
-    @State private var resultText: String = ""
-
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {
-                TextEditor(text: $messageText)
-                    .frame(minHeight: 100)
-                    .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray.opacity(0.3))
-                    )
-                TextEditor(text: $resultText)
-                    .frame(minHeight: 100)
-                    .padding()
-                    .disabled(true)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray.opacity(0.3))
-                    )
-
-                Button {
-                    Task {
-                        await analyzeMessage()
-                    }
-                } label: {
-                    if isLoading {
-                        ProgressView()
-                    } else {
-                        Text("분석")
-                    }
+            VStack(spacing: 12) {
+                HStack {
+                    Text("스미싱 예방법")
+                        .font(.body)
+                        .foregroundColor(.primary)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.blue, lineWidth: 1)
+                        )
                 }
-                .buttonStyle(.borderedProminent)
-                .disabled(messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoading)
-
-                Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                ZStack(alignment: .leading) {
+                    Image("HomeNo1")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .offset(x: -36)
+                    Text("불분명한 송신자가 보낸 URL 클릭하지 말기")
+                        .font(.callout)
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.blue, lineWidth: 1)
+                        )
+                }
+                ZStack(alignment: .leading) {
+                    Image("HomeNo2")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .offset(x: -36)
+                    Text("의심스러운 전화는 일단 끊고, 해당 기관에 직접 전화하기")
+                        .font(.callout)
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.blue, lineWidth: 1)
+                        )
+                }
+                ZStack(alignment: .leading) {
+                    Image("HomeNo3")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .offset(x: -36)
+                    Text("업무, 일상에 불필요한 국제 발진 문자 수신 차단하기")
+                        .font(.callout)
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.blue, lineWidth: 1)
+                        )
+                }
+                ZStack(alignment: .leading) {
+                    Image("HomeNo4")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .offset(x: -36)
+                    Text("스마트폰 보안 제품 설치하기 (ex. V3 모바일 시큐리티, 후후 등)")
+                        .font(.callout)
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.blue, lineWidth: 1)
+                        )
+                }
             }
-            .padding()
-            .navigationTitle("메시지")
-        }
-    }
-
-    private func analyzeMessage() async {
-        guard let url = URL(string: "https://api-production-eb90.up.railway.app/analyze-message") else {
-            print("Invalid URL")
-            return
-        }
-
-        isLoading = true
-        defer { isLoading = false }
-
-        let body: [String: Any] = [
-            "text": messageText
-        ]
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-
-        do {
-            let (data, _) = try await URLSession.shared.data(for: request)
-            let responseString = String(data: data, encoding: .utf8) ?? ""
-            print("📡 서버 응답:", responseString)
-            resultText = responseString
-        } catch {
-            print("❌ 네트워크 오류:", error)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 52)
+            .navigationTitle("으심대")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
