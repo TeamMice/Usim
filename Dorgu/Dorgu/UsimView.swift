@@ -33,19 +33,58 @@ struct UsimView: View {
                         .fill(Color(red: 245/255, green: 245/255, blue: 245/255))
                 )
                 
-                Button {
-                    Task {
-                        await analyzeMessage()
+                HStack(spacing: 12) {
+
+                    // 메인 버튼: 지금 확인하기
+                    Button {
+                        Task {
+                            await analyzeMessage()
+                        }
+                    } label: {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
+
+                            if isLoading {
+                                ProgressView()
+                            } else {
+                                Text("지금 확인하기")
+                                    .foregroundStyle(.white)
+                            }
+                        }
+                        .frame(height: 44)
                     }
-                } label: {
-                    if isLoading {
-                        ProgressView()
-                    } else {
-                        Text("지금 확인하기")
+                    .disabled(messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoading)
+                    .frame(maxWidth: .infinity)
+
+                    // 카메라 버튼 (초안)
+                    Button {
+                        // TODO: Camera action
+                    } label: {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color(red: 245/255, green: 245/255, blue: 245/255))
+
+                            Image(systemName: "camera")
+                                .foregroundStyle(.primary)
+                        }
+                        .frame(width: 44, height: 44)
+                    }
+
+                    // 사진 버튼 (초안)
+                    Button {
+                        // TODO: Photo library action
+                    } label: {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color(red: 245/255, green: 245/255, blue: 245/255))
+
+                            Image(systemName: "photo.on.rectangle")
+                                .foregroundStyle(.primary)
+                        }
+                        .frame(width: 44, height: 44)
                     }
                 }
-                .buttonStyle(.borderedProminent)
-                .disabled(messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoading)
                 
                 TextEditor(text: $resultText)
                     .frame(height: 60)
