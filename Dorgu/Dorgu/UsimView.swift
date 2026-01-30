@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+import PhotosUI
+import Vision
 
 struct UsimView: View {
     @State private var messageText: String = ""
     @State private var isLoading: Bool = false
     @State private var resultText: String = ""
     @State private var isCameraPresented: Bool = false
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var showQRFailAlert: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -72,10 +76,11 @@ struct UsimView: View {
                         .frame(width: 44, height: 44)
                     }
 
-                    // 사진 버튼 (초안)
-                    Button {
-                        // TODO: Photo library action
-                    } label: {
+                    PhotosPicker(
+                        selection: $selectedPhotoItem,
+                        matching: .images,
+                        photoLibrary: .shared()
+                    ) {
                         ZStack {
                             RoundedRectangle(cornerRadius: 8)
                                 .fill(Color(red: 245/255, green: 245/255, blue: 245/255))
@@ -108,6 +113,18 @@ struct UsimView: View {
                     isCameraPresented = false
                 }
             }
+            .onChange(of: selectedPhotoItem) { _, newItem in
+                guard let newItem else { return }
+
+                Task {
+                    await detectQRFromPhotoItem(newItem)
+                }
+            }
+            .alert("QR 코드 인식 실패", isPresented: $showQRFailAlert) {
+                Button("확인", role: .cancel) { }
+            } message: {
+                Text("해당 사진에서 QR 코드를 인식하지 못했습니다.")
+            }
         }
     }
 
@@ -136,6 +153,39 @@ struct UsimView: View {
             resultText = responseString
         } catch {
             print("❌ 네트워크 오류:", error)
+        }
+    }
+
+    private func detectQRFromPhotoItem(_ item: PhotosPickerItem) async {
+        do {
+            guard let data = try await item.loadTransferable(type: Data.self),
+                  let uiImage = UIImage(data: data),
+                  let cgImage = uiImage.cgImage
+            else { return }
+
+            let request = VNDetectBarcodesRequest()
+            request.symbologies = [.qr]
+
+            let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+            try handler.perform([request])
+
+            guard
+                let result = request.results?.first,
+                let payload = result.payloadStringValue
+            else {
+                await MainActor.run {
+                    showQRFailAlert = true
+                }
+                return
+            }
+
+            // ✅ QR 인식 성공 → 입력창 자동 채움
+            await MainActor.run {
+                messageText = payload
+            }
+
+        } catch {
+            print("❌ QR 인식 실패:", error)
         }
     }
 }
