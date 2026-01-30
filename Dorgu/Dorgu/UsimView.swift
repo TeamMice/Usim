@@ -11,6 +11,7 @@ struct UsimView: View {
     @State private var messageText: String = ""
     @State private var isLoading: Bool = false
     @State private var resultText: String = ""
+    @State private var isCameraPresented: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -59,7 +60,7 @@ struct UsimView: View {
 
                     // 카메라 버튼 (초안)
                     Button {
-                        // TODO: Camera action
+                        isCameraPresented = true
                     } label: {
                         ZStack {
                             RoundedRectangle(cornerRadius: 8)
@@ -101,6 +102,9 @@ struct UsimView: View {
             .padding()
             .navigationTitle("의심되면, 혼자 판단하지 마세요")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(isPresented: $isCameraPresented) {
+                CameraView()
+            }
         }
     }
 
