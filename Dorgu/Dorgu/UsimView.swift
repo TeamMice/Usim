@@ -103,7 +103,10 @@ struct UsimView: View {
             .navigationTitle("의심되면, 혼자 판단하지 마세요")
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(isPresented: $isCameraPresented) {
-                CameraView()
+                CameraView { qr in
+                    messageText = qr
+                    isCameraPresented = false
+                }
             }
         }
     }

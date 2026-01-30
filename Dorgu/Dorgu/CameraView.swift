@@ -9,6 +9,7 @@ import SwiftUI
 import AVFoundation
 
 struct CameraView: View {
+    let onQRDetected: (String) -> Void
     @State private var detectedQR: String?
 
     var body: some View {
@@ -23,7 +24,7 @@ struct CameraView: View {
                     Spacer()
 
                     Button {
-                        // TODO: QR 버튼 탭 동작 연결
+                        onQRDetected(qr)
                     } label: {
                         Text(qr)
                             .lineLimit(2)
