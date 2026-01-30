@@ -18,6 +18,7 @@ struct UsimView: View {
     @State private var showQRFailAlert: Bool = false
     @FocusState private var isTextEditorFocused: Bool
     @State private var resultTextHeight: CGFloat = 60
+    @State private var isSpamResult: Bool? = nil
 
     var body: some View {
         NavigationStack {
@@ -104,6 +105,21 @@ struct UsimView: View {
                                     .foregroundStyle(.primary)
                             }
                             .frame(width: 44, height: 44)
+                        }
+                    }
+                    
+                    if let isSpam = isSpamResult {
+                        HStack {
+                            if isSpam {
+                                Text("⚠️ 주의하세요")
+                                    .foregroundStyle(.red)
+                                    .font(.headline)
+                            } else {
+                                Text("의심되는 정황이 보이지 않아요")
+                                    .foregroundStyle(.green)
+                                    .font(.headline)
+                            }
+                            Spacer()
                         }
                     }
                     
@@ -202,6 +218,7 @@ struct UsimView: View {
             let formattedReasons = decoded.reasons.joined(separator: "\n\n")
 
             await MainActor.run {
+                isSpamResult = decoded.isSpam
                 resultText = formattedReasons
             }
 
