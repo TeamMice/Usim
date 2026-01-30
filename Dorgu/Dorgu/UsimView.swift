@@ -15,13 +15,23 @@ struct UsimView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-                TextEditor(text: $messageText)
-                    .frame(height: 60)
-                    .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray.opacity(0.3))
-                    )
+                ZStack(alignment: .topLeading) {
+                    if messageText.isEmpty {
+                        Text("의심되는 문자 내용을 붙여넣으세요")
+                            .foregroundStyle(.gray)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 16)
+                    }
+
+                    TextEditor(text: $messageText)
+                        .frame(height: 60)
+                        .scrollContentBackground(.hidden)
+                        .padding(8)
+                }
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color(red: 245/255, green: 245/255, blue: 245/255))
+                )
                 
                 Button {
                     Task {
@@ -31,7 +41,7 @@ struct UsimView: View {
                     if isLoading {
                         ProgressView()
                     } else {
-                        Text("분석")
+                        Text("지금 확인하기")
                     }
                 }
                 .buttonStyle(.borderedProminent)
@@ -39,12 +49,13 @@ struct UsimView: View {
                 
                 TextEditor(text: $resultText)
                     .frame(height: 60)
-                    .padding()
-                    .disabled(true)
-                    .overlay(
+                    .scrollContentBackground(.hidden)
+                    .padding(8)
+                    .background(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray.opacity(0.3))
+                            .fill(Color(red: 245/255, green: 245/255, blue: 245/255))
                     )
+                    .disabled(true)
                 
                 Spacer()
             }
