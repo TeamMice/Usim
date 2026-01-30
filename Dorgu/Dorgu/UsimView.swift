@@ -17,6 +17,7 @@ struct UsimView: View {
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var showQRFailAlert: Bool = false
     @FocusState private var isTextEditorFocused: Bool
+    @State private var resultTextHeight: CGFloat = 60
 
     var body: some View {
         NavigationStack {
@@ -106,15 +107,36 @@ struct UsimView: View {
                         }
                     }
                     
-                    TextEditor(text: $resultText)
-                        .frame(height: 60)
-                        .scrollContentBackground(.hidden)
-                        .padding(8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color(red: 245/255, green: 245/255, blue: 245/255))
-                        )
-                        .disabled(true)
+                    ZStack(alignment: .topLeading) {
+
+                        // 실제 표시되는 결과 TextEditor
+                        TextEditor(text: $resultText)
+                            .frame(height: max(60, resultTextHeight))
+                            .scrollContentBackground(.hidden)
+                            .padding(8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color(red: 245/255, green: 245/255, blue: 245/255))
+                            )
+                            .disabled(true)
+
+                        // 높이 측정용 숨은 Text
+                        Text(resultText)
+                            .font(.body)
+                            .padding(16)
+                            .opacity(0)
+                            .background(
+                                GeometryReader { geo in
+                                    Color.clear
+                                        .onAppear {
+                                            resultTextHeight = geo.size.height
+                                        }
+                                        .onChange(of: resultText) { _ in
+                                            resultTextHeight = geo.size.height
+                                        }
+                                }
+                            )
+                    }
                     
                     Spacer()
                 }
