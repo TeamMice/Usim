@@ -166,6 +166,14 @@ struct UsimView: View {
         }
     }
 
+    // 서버 응답 파싱용 구조체
+    private struct AnalyzeResponse: Decodable {
+        let isSpam: Bool
+        let category: String
+        let confidence: Double
+        let reasons: [String]
+    }
+
     private func analyzeMessage() async {
         guard let url = URL(string: "https://api-production-eb90.up.railway.app/analyze-message") else {
             print("Invalid URL")
@@ -188,9 +196,17 @@ struct UsimView: View {
             let (data, _) = try await URLSession.shared.data(for: request)
             let responseString = String(data: data, encoding: .utf8) ?? ""
             print("📡 서버 응답:", responseString)
-            resultText = responseString
+
+            let decoded = try JSONDecoder().decode(AnalyzeResponse.self, from: data)
+
+            let formattedReasons = decoded.reasons.joined(separator: "\n\n")
+
+            await MainActor.run {
+                resultText = formattedReasons
+            }
+
         } catch {
-            print("❌ 네트워크 오류:", error)
+            print("❌ 네트워크 또는 파싱 오류:", error)
         }
     }
 
