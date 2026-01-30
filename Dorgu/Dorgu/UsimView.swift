@@ -16,6 +16,7 @@ struct UsimView: View {
     @State private var isCameraPresented: Bool = false
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var showQRFailAlert: Bool = false
+    @FocusState private var isTextEditorFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -32,6 +33,7 @@ struct UsimView: View {
                         .frame(height: 60)
                         .scrollContentBackground(.hidden)
                         .padding(8)
+                        .focused($isTextEditorFocused)
                 }
                 .background(
                     RoundedRectangle(cornerRadius: 8)
@@ -48,7 +50,11 @@ struct UsimView: View {
                     } label: {
                         ZStack {
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
+                                .fill(
+                                    messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                    ? Color(red: 217/255, green: 217/255, blue: 217/255)
+                                    : Color(red: 0/255, green: 136/255, blue: 255/255)
+                                )
 
                             if isLoading {
                                 ProgressView()
@@ -124,6 +130,9 @@ struct UsimView: View {
                 Button("확인", role: .cancel) { }
             } message: {
                 Text("해당 사진에서 QR 코드를 인식하지 못했습니다.")
+            }
+            .onTapGesture {
+                isTextEditorFocused = false
             }
         }
     }
