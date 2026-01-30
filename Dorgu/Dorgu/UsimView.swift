@@ -16,21 +16,13 @@ struct UsimView: View {
         NavigationStack {
             VStack(spacing: 16) {
                 TextEditor(text: $messageText)
-                    .frame(minHeight: 100)
+                    .frame(height: 60)
                     .padding()
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
                             .stroke(Color.gray.opacity(0.3))
                     )
-                TextEditor(text: $resultText)
-                    .frame(minHeight: 100)
-                    .padding()
-                    .disabled(true)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray.opacity(0.3))
-                    )
-
+                
                 Button {
                     Task {
                         await analyzeMessage()
@@ -44,7 +36,16 @@ struct UsimView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoading)
-
+                
+                TextEditor(text: $resultText)
+                    .frame(height: 60)
+                    .padding()
+                    .disabled(true)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray.opacity(0.3))
+                    )
+                
                 Spacer()
             }
             .padding()
