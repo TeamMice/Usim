@@ -9,13 +9,40 @@ import SwiftUI
 import AVFoundation
 
 struct CameraView: View {
+    let onQRDetected: (String) -> Void
+    @State private var detectedQR: String?
+
     var body: some View {
-        CameraPreview { _ in
-            // QR 감지는 유지하되, 이 뷰에서는 아무 UI 반응도 하지 않음
+        ZStack {
+            CameraPreview { qr in
+                detectedQR = qr
+            }
+            .ignoresSafeArea()
+
+            if let qr = detectedQR {
+                VStack {
+                    Spacer()
+
+                    Button {
+                        onQRDetected(qr)
+                    } label: {
+                        Text(qr)
+                            .lineLimit(2)
+                            .truncationMode(.middle)
+                            .foregroundStyle(.white)
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 16)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.yellow)
+                            )
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 24)
+                }
+            }
         }
-        .ignoresSafeArea()
-        .navigationTitle("카메라")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
