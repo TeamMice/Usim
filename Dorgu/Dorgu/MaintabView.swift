@@ -10,19 +10,20 @@ import SwiftUI
 struct MaintabView: View {
     var body: some View {
         TabView {
-            MessageView()
-                .tabItem {
-                    Label("메시지", systemImage: "message")
-                }
+            NavigationStack {
+                HomeView()
+            }
+            .tabItem {
+                Label("홈", systemImage: "house")
+            }
 
-            CameraView()
-                .tabItem {
-                    Label("카메라", systemImage: "camera")
-                }
+            NavigationStack {
+                UsimView()
+            }
+            .tabItem {
+                Label("으심대", systemImage: "magnifyingglass")
+            }
         }
     }
 }
 
-#Preview {
-    MaintabView()
-}

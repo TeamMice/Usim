@@ -2,7 +2,7 @@
 //  MessageView.swift
 //  Dorgu
 //
-//  Created by 이돈혁 on 1/27/26.
+//  Created by 이돈혁 on 1/29/26.
 //
 
 import SwiftUI
@@ -10,13 +10,22 @@ import SwiftUI
 struct MessageView: View {
     @State private var messageText: String = ""
     @State private var isLoading: Bool = false
+    @State private var resultText: String = ""
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
                 TextEditor(text: $messageText)
-                    .frame(minHeight: 200)
+                    .frame(minHeight: 100)
                     .padding()
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray.opacity(0.3))
+                    )
+                TextEditor(text: $resultText)
+                    .frame(minHeight: 100)
+                    .padding()
+                    .disabled(true)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
                             .stroke(Color.gray.opacity(0.3))
@@ -65,6 +74,7 @@ struct MessageView: View {
             let (data, _) = try await URLSession.shared.data(for: request)
             let responseString = String(data: data, encoding: .utf8) ?? ""
             print("📡 서버 응답:", responseString)
+            resultText = responseString
         } catch {
             print("❌ 네트워크 오류:", error)
         }
