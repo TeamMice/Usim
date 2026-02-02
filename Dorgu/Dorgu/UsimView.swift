@@ -179,6 +179,14 @@ struct UsimView: View {
             } message: {
                 Text("해당 사진에서 QR 코드를 인식하지 못했습니다.")
             }
+            .onChange(of: messageText) { _, newValue in
+                // 입력이 바뀌면 이전 검사 결과 초기화
+                if !newValue.isEmpty {
+                    resultText = ""
+                    isSpamResult = nil
+                    resultTextHeight = 60
+                }
+            }
         }
     }
 
