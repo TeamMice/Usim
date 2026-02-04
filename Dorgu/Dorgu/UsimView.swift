@@ -207,8 +207,15 @@ struct UsimView: View {
         isLoading = true
         defer { isLoading = false }
 
+        // iOS 시스템 언어 → "ko" / "en" 형태로 정규화
+        let language = Locale.preferredLanguages.first?
+            .components(separatedBy: "-")
+            .first ?? "en"
+
         let body: [String: Any] = [
-            "text": messageText
+            "text": messageText,
+            "language": language,
+            "client": "ios"
         ]
 
         var request = URLRequest(url: url)
