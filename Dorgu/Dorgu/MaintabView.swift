@@ -11,17 +11,17 @@ struct MaintabView: View {
     var body: some View {
         TabView {
             NavigationStack {
-                HomeView()
-            }
-            .tabItem {
-                Label("홈", systemImage: "house")
-            }
-
-            NavigationStack {
                 UsimView()
             }
             .tabItem {
                 Label("으심대", systemImage: "magnifyingglass")
+            }
+            
+            NavigationStack {
+                ReportView()
+            }
+            .tabItem {
+                Label("신고", systemImage: "light.beacon.max.fill")
             }
         }
     }
