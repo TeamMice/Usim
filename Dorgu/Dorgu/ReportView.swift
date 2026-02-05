@@ -12,7 +12,7 @@ struct ReportView: View {
         NavigationStack {
             VStack(spacing: 20) {
                 HStack {
-                    Text("온라인, 유선 신고")
+                    Text("누르고 바로 신고하세요")
                         .font(.body)
                         .foregroundColor(.primary)
                         .padding(.horizontal, 10)
@@ -25,11 +25,12 @@ struct ReportView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .offset(y: -20)
                 ZStack(alignment: .leading) {
-                    Image("HomeNo1")
+                    Image("OnlineSingo")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 24, height: 24)
-                        .offset(x: -20, y: -12)
+                        .offset(x: -20, y: 0)
+                        .zIndex(1)
                     Button {
                         if let url = URL(string: "https://ecrm.police.go.kr/sci/pcc_V3_send?rp=r") {
                             UIApplication.shared.open(url)
@@ -46,13 +47,15 @@ struct ReportView: View {
                             )
                     }
                     .buttonStyle(.plain)
+                    .zIndex(0)
                 }
                 ZStack(alignment: .leading) {
-                    Image("HomeNo2")
+                    Image("Police")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 24, height: 24)
-                        .offset(x: -20, y: -12)
+                        .offset(x: -20, y: 0)
+                        .zIndex(1)
                     Button {
                         if let url = URL(string: "tel://112") {
                             UIApplication.shared.open(url)
@@ -69,13 +72,15 @@ struct ReportView: View {
                             )
                     }
                     .buttonStyle(.plain)
+                    .zIndex(0)
                 }
                 ZStack(alignment: .leading) {
-                    Image("HomeNo3")
+                    Image("KISA")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 24, height: 24)
-                        .offset(x: -20, y: -12)
+                        .offset(x: -20, y: 0)
+                        .zIndex(1)
                     Button {
                         if let url = URL(string: "tel://118") {
                             UIApplication.shared.open(url)
@@ -92,13 +97,15 @@ struct ReportView: View {
                             )
                     }
                     .buttonStyle(.plain)
+                    .zIndex(0)
                 }
                 ZStack(alignment: .leading) {
-                    Image("HomeNo4")
+                    Image("GGW")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 24, height: 24)
-                        .offset(x: -20, y: -12)
+                        .offset(x: -20, y: 0)
+                        .zIndex(1)
                     Button {
                         if let url = URL(string: "tel://1332") {
                             UIApplication.shared.open(url)
@@ -115,12 +122,13 @@ struct ReportView: View {
                             )
                     }
                     .buttonStyle(.plain)
+                    .zIndex(0)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 20)
             .offset(y: -100)
-            .navigationTitle("신고하기")
+            .navigationTitle("온라인, 유선 신고")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
