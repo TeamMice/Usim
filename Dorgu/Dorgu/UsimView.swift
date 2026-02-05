@@ -18,6 +18,7 @@ struct UsimView: View {
     @State private var showQRFailAlert: Bool = false
     @FocusState private var isTextEditorFocused: Bool
     @State private var resultTextHeight: CGFloat = 60
+    @State private var isSpamResult: Bool? = nil
 
     var body: some View {
         NavigationStack {
@@ -107,6 +108,21 @@ struct UsimView: View {
                         }
                     }
                     
+                    if let isSpam = isSpamResult {
+                        HStack {
+                            if isSpam {
+                                Text("⚠️ 주의하세요")
+                                    .foregroundStyle(.red)
+                                    .font(.headline)
+                            } else {
+                                Text("의심되는 정황이 보이지 않아요")
+                                    .foregroundStyle(.green)
+                                    .font(.headline)
+                            }
+                            Spacer()
+                        }
+                    }
+                    
                     ZStack(alignment: .topLeading) {
 
                         // 실제 표시되는 결과 TextEditor
@@ -163,7 +179,23 @@ struct UsimView: View {
             } message: {
                 Text("해당 사진에서 QR 코드를 인식하지 못했습니다.")
             }
+            .onChange(of: messageText) { _, newValue in
+                // 입력이 바뀌면 이전 검사 결과 초기화
+                if !newValue.isEmpty {
+                    resultText = ""
+                    isSpamResult = nil
+                    resultTextHeight = 60
+                }
+            }
         }
+    }
+
+    // 서버 응답 파싱용 구조체
+    private struct AnalyzeResponse: Decodable {
+        let isSpam: Bool
+        let category: String
+        let confidence: Double
+        let reasons: [String]
     }
 
     private func analyzeMessage() async {
@@ -175,8 +207,15 @@ struct UsimView: View {
         isLoading = true
         defer { isLoading = false }
 
+        // iOS 시스템 언어 → "ko" / "en" 형태로 정규화
+        let language = Locale.preferredLanguages.first?
+            .components(separatedBy: "-")
+            .first ?? "en"
+
         let body: [String: Any] = [
-            "text": messageText
+            "text": messageText,
+            "language": language,
+            "client": "ios"
         ]
 
         var request = URLRequest(url: url)
@@ -188,9 +227,18 @@ struct UsimView: View {
             let (data, _) = try await URLSession.shared.data(for: request)
             let responseString = String(data: data, encoding: .utf8) ?? ""
             print("📡 서버 응답:", responseString)
-            resultText = responseString
+
+            let decoded = try JSONDecoder().decode(AnalyzeResponse.self, from: data)
+
+            let formattedReasons = decoded.reasons.joined(separator: "\n\n")
+
+            await MainActor.run {
+                isSpamResult = decoded.isSpam
+                resultText = formattedReasons
+            }
+
         } catch {
-            print("❌ 네트워크 오류:", error)
+            print("❌ 네트워크 또는 파싱 오류:", error)
         }
     }
 
