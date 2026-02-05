@@ -1,87 +1,57 @@
-# MICE
+# 🛡️ 으심대 - 스미싱 및 피싱 방지 도우미
 
-**MICE**는 문화 공간(박물관, 전시관 등)을 방문하며 스탬프를 수집할 수 있는 iOS 애플리케이션입니다.  
-사용자는 위치 기반으로 현장에서만 스탬프를 획득할 수 있고, 찜하기/마이페이지/로그인 등 다양한 기능을 제공합니다.  
-
-이 저장소는 App Store Connect에 등록된 **공식 Support URL**과 동일하게 사용됩니다.  
-문의 및 지원이 필요하시면 이 문서를 참고해주세요.  
+> **"의심되면, 혼자 판단하지 마세요."**
+> '으심대'는 수상한 문자 메시지와 QR 코드를 분석하여 사용자를 피싱 범죄로부터 보호하는 iOS 애플리케이션입니다.
 
 ---
 
-## 주요 기능 (Features)
+## ✨ 주요 기능 (Key Features)
 
-- **회원 관리**
-  - Apple 로그인 기반 회원가입/로그인
-  - 마이페이지(프로필, 이메일 확인, 로그아웃, 회원 탈퇴)
+### 1. 🔍 AI 메시지 분석 (UsimView)
+- 수상한 문자 내용을 복사하여 붙여넣으면 AI가 스팸 여부를 판단합니다.
+- **분석 내용**: 위험도(isSpam), 카테고리, 신뢰도, 그리고 구체적인 판단 근거를 제공합니다.
+- 사용자의 시스템 언어에 맞춘 다국어 분석 요청 기능을 지원합니다.
 
-- **스탬프 획득**
-  - CoreLocation을 이용한 거리 기반 획득 로직
-  - 박물관/전시관 등 특정 장소 400m 이내 접근 시 스탬프 획득 가능
-  - 획득 시 방문 완료 라벨 및 획득 날짜 표시
+### 2. 📸 QR 코드 스캔 및 분석 (CameraView)
+- **실시간 스캔**: 카메라를 통해 QR 코드를 즉시 인식합니다.
+- **사진 라이브러리**: 앨범에 저장된 스크린샷이나 이미지에서 QR 코드를 추출(Vision Framework)하여 분석할 수 있습니다.
+- **URL 검사**: 추출된 URL의 위험성을 서버에 조회하여 안전 여부를 확인합니다.
 
-- **즐겨찾기 관리**
-  - 원하는 전시관/스탬프를 찜 목록에 추가/삭제
-  - 별도 Bookmark 화면에서 확인 가능
+### 3. 🚨 즉시 신고 서비스 (ReportView)
+- 피해 발생 시 신속하게 대응할 수 있도록 주요 기관 연결 기능을 제공합니다.
+- **온라인 신고**: 경찰청 사이버범죄 신고시스템(ECRM) 연결
+- **전화 연결**: 경찰청(112), 한국인터넷진흥원(118), 금융감독원(1332) 직통 전화 버튼
 
 ---
 
 ## 🛠 기술 스택 (Tech Stack)
 
-### iOS App
 - **Language**: Swift 5.9+
-- **UI Frameworks**: UIKit + SnapKit (부분 적용)
-- **Reactivity**: Combine (데이터 바인딩)
-- **System APIs**: CoreLocation (거리 기반 스탬프 획득)
-- **Dependency Manager**: Swift Package Manager
-- **Architecture**: MVVM (뷰모델 기반 상태 관리)
-
-### Backend (Supabase)
-- **Database**: PostgreSQL (Supabase Managed)
-- **Auth**: Apple Sign-In + Supabase Auth (세션 기반 인증, RLS 정책)
-- **Storage**: Supabase 테이블 (stamp, mystamp, wishlist, users)
-- **Security**: Row Level Security (mystamp에 auth.uid() 자동 주입)
-
-### Collaboration & Tools
-- **Version Control**: GitHub
-- **CI/CD**: Xcode Cloud (빌드/테스트), TestFlight (베타 배포)
-- **Design**: Figma → SwiftUI/UIKit 반영
-- **Project Management**: Notion, Slack
+- **Framework**: SwiftUI
+- **API**: Custom REST API (`URLSession`, `JSONDecoder`)
+- **Libraries/Frameworks**:
+  - `AVFoundation`: 실시간 카메라 QR 인식 구현
+  - `Vision`: 이미지 파일 내 QR 코드 분석
+  - `PhotosUI`: 시스템 사진 앨범 접근 및 이미지 선택
 
 ---
 
-## 실행 방법 (Getting Started)
+## 📱 실행 화면 (Screenshots)
 
-- **MICE 앱은 현재 TestFlight 베타 테스트를 통해 체험하실 수 있습니다.**: https://testflight.apple.com/join/BS79fxdx
-
----
-
-## 지원 (Support)
-
-- **문의**: 저장소 Issues 탭에 등록해주세요. 또는 TestFlight를 통한 이슈 리포트도 가능합니다.
-- **이메일**: booby9709@gmail.com / gksmf0160@gmail.com / jesbio@naver.com
+| 으심대 (메인 분석) | QR 스캔 | 신고 센터 |
+| :---: | :---: | :---: |
+| <img src="https://via.placeholder.com/200x400" width="200"> | <img src="https://via.placeholder.com/200x400" width="200"> | <img src="https://via.placeholder.com/200x400" width="200"> |
+| *메시지 분석 화면* | *카메라 기반 QR 인식* | *기관별 즉시 신고* |
 
 ---
 
-## 라이선스 (License)
+## 🚀 시작하기 (Getting Started)
 
-MIT License
+### 요구 사항
+- iOS 16.0 이상
+- Xcode 15.0 이상
 
-Copyright (c) 2025 [Myunggyun Song, Eunsae Jang, Hayeon Seo, Donhyuk Lee]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+### 설치 및 실행
+1. 저장소를 클론합니다.
+   ```bash
+   git clone [https://github.com/your-username/Dorgu.git](https://github.com/your-username/Dorgu.git)
